@@ -196,30 +196,28 @@ body {
   bottom: 40px;
   right: 40px;
   z-index: 10;
-  /* Fica no topo junto com o menu de navegação */
   display: flex;
   align-items: center;
   justify-content: center;
   width: 45px;
   height: 45px;
   background-color: rgba(0, 0, 0, 0.6);
-  /* Fundo sutil para não brigar com o vídeo */
   border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 50%;
   text-decoration: none;
 
-  /* Estado inicial: Escondido e invisível */
+  /* Estado inicial escondido */
   opacity: 0;
   visibility: hidden;
   transform: translateY(15px);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Ativado pelo Javascript quando sai da seção Home */
 .back-to-top.visible {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+  animation: pulsar-seta 2s infinite ease-in-out;
 }
 
 .arrow-icon {
@@ -236,8 +234,8 @@ body {
 /* Efeito de passar o mouse */
 .back-to-top:hover {
   border-color: #FCD800;
-  /* Acende no amarelo do logo */
   transform: scale(1.1);
+  animation: none;
 }
 
 .back-to-top:hover .arrow-icon {
@@ -246,7 +244,30 @@ body {
   /* Seta dá um leve pulinho estético */
 }
 
-/* Animaçãozinha opcional da seta ao passar o mouse */
+@keyframes pulsar-seta {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(252, 216, 0, 0);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  50% {
+    transform: scale(1.05);
+    /* Aumenta levemente de tamanho */
+    box-shadow: 0 0 12px 2px rgba(252, 216, 0, 0.3);
+    /* Cria uma aura amarela brilhante em volta */
+    border-color: rgba(252, 216, 0, 0.6);
+    /* A borda puxa sutilmente para o amarelo do logo */
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(252, 216, 0, 0);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+/* Mantém o pulinho da seta interna no hover */
 @keyframes seta-pula {
   0% {
     transform: translateY(0);
@@ -257,7 +278,7 @@ body {
   }
 }
 
-/* Ajuste de margem em telas menores de celular */
+/* Ajuste mobile */
 @media (max-width: 768px) {
   .back-to-top {
     bottom: 25px;
@@ -266,8 +287,29 @@ body {
     height: 40px;
   }
 
+  /* Ajusta a animação do celular para ignorar o box-shadow e poupar processamento/bateria */
+  .back-to-top.visible {
+    animation: pulsar-seta-mobile 2s infinite ease-in-out;
+  }
+
   .arrow-icon {
     width: 18px;
     height: 18px;
+  }
+}
+
+/* Versão leve do pulsar para celulares */
+@keyframes pulsar-seta-mobile {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+    border-color: rgba(252, 216, 0, 0.6);
+  }
+
+  100% {
+    transform: scale(1);
   }
 }
