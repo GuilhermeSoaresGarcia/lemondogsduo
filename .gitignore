@@ -5,3 +5,4 @@
 # Arquivos de ambiente e chaves secretas
 .env
 *.key
+env.js
