@@ -1,0 +1,7 @@
+# Extensões e configurações locais do VS Code
+.vscode/
+*.json
+
+# Arquivos de ambiente e chaves secretas
+.env
+*.key
