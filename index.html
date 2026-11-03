@@ -53,8 +53,46 @@
   </section>
 
   <section id="contato" class="site-section">
-    <h2>Entre em Contato</h2>
-    <!-- Seu formulário -->
+    <div class="section-header">
+      <h2 class="section-title">Contato</h2>
+      <p class="section-subtitle">Mande uma mensagem, solicite um show ou faça seu pedido.</p>
+    </div>
+
+    <form id="contact-form" class="contact-form">
+      <div class="form-group">
+        <label for="contact-name">Nome</label>
+        <input type="text" id="contact-name" name="user_name" placeholder="Seu nome" required autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label for="contact-email">E-mail</label>
+        <input type="email" id="contact-email" name="user_email" placeholder="seuemail@exemplo.com" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label for="contact-subject">Assunto</label>
+        <div class="select-wrapper">
+          <select id="contact-subject" name="subject" required>
+            <option value="" disabled selected>Selecione uma opção</option>
+            <option value="Pedir música">Pedir música</option>
+            <option value="Marcar show">Marcar show</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contact-message">Mensagem</label>
+        <textarea id="contact-message" name="message" rows="4" placeholder="Escreva sua mensagem aqui..." required></textarea>
+      </div>
+
+      <button type="submit" id="contact-submit" class="contact-btn">
+        <span class="btn-text">Enviar Mensagem</span>
+        <span class="btn-spinner" aria-hidden="true"></span>
+      </button>
+
+      <div id="contact-feedback" class="form-feedback" aria-live="polite"></div>
+    </form>
   </section>
 
   <a href="#home" id="back-to-top" class="back-to-top" aria-label="Voltar ao topo">
@@ -64,7 +102,126 @@
     </svg>
   </a>
 
+  <!-- Variáveis de ambiente locais (opcional / ignorado no git) -->
+  <script src="env.js"></script>
+
+  <!-- SDK EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
   <script>
+    // =========================================================================
+    // CARREGAMENTO DE VARIÁVEIS DE AMBIENTE / CREDENCIAIS EMAILJS
+    // Ordem de prioridade:
+    // 1. window.ENV (carregado via env.js ou bundler Vite/Webpack/Parcel)
+    // 2. Leitura assíncrona de arquivo .env local (se servido via HTTP local)
+    // 3. Fallback estático definido abaixo
+    // =========================================================================
+    window.EMAILJS_CONFIG = {
+      publicKey: (window.ENV && window.ENV.EMAILJS_PUBLIC_KEY) || 'SUA_PUBLIC_KEY_AQUI',
+      serviceId: (window.ENV && window.ENV.EMAILJS_SERVICE_ID) || 'SEU_SERVICE_ID_AQUI',
+      templateId: (window.ENV && window.ENV.EMAILJS_TEMPLATE_ID) || 'SEU_TEMPLATE_ID_AQUI'
+    };
+
+    // Função para carregar .env via fetch se ainda não foi carregado pelo window.ENV
+    window.carregarVariaveisDeAmbiente = async function carregarVariaveisDeAmbiente() {
+      const config = window.EMAILJS_CONFIG;
+      const precisaCarregar =
+        config.publicKey === 'SUA_PUBLIC_KEY_AQUI' ||
+        config.serviceId === 'SEU_SERVICE_ID_AQUI' ||
+        config.templateId === 'SEU_TEMPLATE_ID_AQUI';
+
+      if (precisaCarregar) {
+        try {
+          const resp = await fetch('.env');
+          if (resp.ok) {
+            const texto = await resp.text();
+            const linhas = texto.split(/\r?\n/);
+            const envMap = {};
+            linhas.forEach(linha => {
+              const semComentario = linha.split('#')[0].trim();
+              if (semComentario) {
+                const match = semComentario.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+                if (match) {
+                  let val = (match[2] || '').trim();
+                  // Remove aspas simples ou duplas envolventes
+                  if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+                    val = val.substring(1, val.length - 1);
+                  }
+                  envMap[match[1]] = val;
+                }
+              }
+            });
+
+            if (envMap.EMAILJS_PUBLIC_KEY && envMap.EMAILJS_PUBLIC_KEY !== 'sua_public_key_aqui') {
+              config.publicKey = envMap.EMAILJS_PUBLIC_KEY;
+            }
+            if (envMap.EMAILJS_SERVICE_ID && envMap.EMAILJS_SERVICE_ID !== 'seu_service_id_aqui') {
+              config.serviceId = envMap.EMAILJS_SERVICE_ID;
+            }
+            if (envMap.EMAILJS_TEMPLATE_ID && envMap.EMAILJS_TEMPLATE_ID !== 'seu_template_id_aqui') {
+              config.templateId = envMap.EMAILJS_TEMPLATE_ID;
+            }
+          }
+        } catch (e) {
+          // Arquivo .env não servido ou inacessível no navegador; fallback mantido
+        }
+      }
+
+      // Inicializa o EmailJS quando a chave pública estiver disponível
+      if (window.emailjs && config.publicKey && config.publicKey !== 'SUA_PUBLIC_KEY_AQUI') {
+        emailjs.init({ publicKey: config.publicKey });
+      }
+    }
+
+    // Dispara a leitura assim que o DOM estiver pronto
+    carregarVariaveisDeAmbiente();
+
+    // Gerenciamento do envio do formulário
+    const contactForm = document.getElementById('contact-form');
+    const contactSubmitBtn = document.getElementById('contact-submit');
+    const contactFeedback = document.getElementById('contact-feedback');
+
+    if (contactForm) {
+      contactForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        // Garante que tentou resolver variáveis antes de validar
+        await carregarVariaveisDeAmbiente();
+        const config = window.EMAILJS_CONFIG;
+
+        // Verificação amigável de credenciais ainda não preenchidas
+        if (!config.publicKey || config.publicKey === 'SUA_PUBLIC_KEY_AQUI' || config.publicKey === 'sua_public_key_aqui' ||
+            !config.serviceId || config.serviceId === 'SEU_SERVICE_ID_AQUI' || config.serviceId === 'seu_service_id_aqui' ||
+            !config.templateId || config.templateId === 'SEU_TEMPLATE_ID_AQUI' || config.templateId === 'seu_template_id_aqui') {
+          contactFeedback.className = 'form-feedback warning';
+          contactFeedback.textContent = 'Atenção: Configure suas credenciais no arquivo .env ou env.js (EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID).';
+          return;
+        }
+
+        contactSubmitBtn.disabled = true;
+        contactSubmitBtn.classList.add('loading');
+        contactFeedback.className = 'form-feedback';
+        contactFeedback.textContent = '';
+
+        emailjs.sendForm(config.serviceId, config.templateId, this)
+          .then(() => {
+            contactFeedback.className = 'form-feedback success';
+            contactFeedback.textContent = 'Mensagem enviada com sucesso! Logo entraremos em contato.';
+            contactForm.reset();
+          })
+          .catch((error) => {
+            console.error('Erro EmailJS:', error);
+            contactFeedback.className = 'form-feedback error';
+            contactFeedback.textContent = 'Ocorreu um erro ao enviar. Tente novamente ou use nossas redes sociais.';
+          })
+          .finally(() => {
+            contactSubmitBtn.disabled = false;
+            contactSubmitBtn.classList.remove('loading');
+          });
+      });
+    }
+
+    // Botão Voltar ao Topo
     window.addEventListener('scroll', () => {
       const btn = document.getElementById('back-to-top');
       if (window.scrollY > window.innerHeight / 2) {
