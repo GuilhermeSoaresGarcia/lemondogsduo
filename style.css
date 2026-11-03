@@ -1,22 +1,35 @@
-html, body {
+/* 1. RESET E SISTEMA DE SNAP SLIDE */
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden; 
-  background-color: #000; 
+  overflow-x: hidden;
+  overflow-y: scroll;
+  background-color: #000;
+  scroll-snap-type: y mandatory;
 }
 
+/* 2. BACKGROUND DO VÍDEO FIXO ATRÁS DE TUDO */
 .video-container {
-  position: relative;
-  width: 100%;
-  height: 100vh; 
-  height: 100dvh; 
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 0;
+  /* Camada mais baixa */
   overflow: hidden;
-  isolation: isolate; 
+  isolation: isolate;
 }
 
-/* CAMADA ESCURA + FILTRO DE TV ANTIGA */
+/* FILTRO DE TV ANTIGA */
 .video-container::after {
   content: '';
   position: absolute;
@@ -24,11 +37,11 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1; 
-  background: 
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), 
-    rgba(0, 0, 0, 0.4); 
-  background-size: 100% 4px; 
+  z-index: 1;
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%),
+    rgba(0, 0, 0, 0.4);
+  background-size: 100% 4px;
   pointer-events: none;
 }
 
@@ -38,32 +51,31 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; 
-  z-index: 0; 
+  object-fit: cover;
+  z-index: 0;
   pointer-events: none;
-  filter: grayscale(100%) contrast(120%) brightness(90%); 
+  filter: grayscale(100%) contrast(120%) brightness(90%);
 }
 
-/* ==========================================================================
-   ELEMENTOS DE INTERFACE E HARMÔNIA VISUAL
-   ========================================================================== */
-
-/* MENU SUPERIOR */
+/* 3. MENU SUPERIOR TRAVADO NO TOPO ABSOLUTO (ALWAYS ON TOP) */
 .top-nav {
-  position: absolute;
-  top: 40px;
+  position: fixed;
+  top: 0;
   left: 0;
   width: 100%;
-  z-index: 2;
+  z-index: 10;
+  /* Camada mais alta do site para nunca ser coberta por nada */
   display: flex;
   justify-content: center;
-  gap: 40px; /* Espaçamento entre os links */
+  gap: 40px;
+  padding: 40px 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
 }
 
 .nav-link {
   color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
-  font-family: 'Montserrat', sans-serif;
+  font-family: sans-serif;
   font-weight: 700;
   font-size: 14px;
   text-transform: uppercase;
@@ -72,57 +84,57 @@ html, body {
 }
 
 .nav-link:hover {
-  color: #FCD800; /* Acende no amarelo do logo */
+  color: #FCD800;
   transform: translateY(-2px);
 }
 
-/* LOGO CENTRAL */
-.content {
+/* ==========
+   4. SEÇÕES 
+   ========== */
+.site-section {
   position: relative;
-  z-index: 2; 
+  z-index: 2;
   width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   box-sizing: border-box;
-  padding: 0 24px; 
-  top: 50%;
-  transform: translateY(-50%);
+  padding: 120px 24px 120px 24px;
+  /* Padding igual no topo e base garante centralização perfeita */
+  color: #fff;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Centraliza o logo verticalmente na seção */
+  background-color: transparent;
+  scroll-snap-align: start;
 }
 
+
+/* ELEMENTOS ESPECÍFICOS DA SEÇÃO HOME */
 .logo-site {
   display: block;
-  margin: 0 auto;       
-  width: 100%;          
-  max-width: 500px;     
-  height: auto;         
-  filter: drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.8)); 
-}
-
-/* RODAPÉ E INSTAGRAM */
-.bottom-footer {
-  position: absolute;
-  bottom: 40px;
-  left: 0;
+  margin: 0 auto;
   width: 100%;
-  z-index: 2;
-  display: flex;
-  justify-content: center;
+  max-width: 500px;
+  height: auto;
+  filter: drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.8));
 }
 
 .insta-link {
   display: inline-block;
-  transform-origin: center center; 
-  
-  /* Ativa a animação de rotação em 3D a cada 5 segundos */
-  animation: insta-animation 5s infinite cubic-bezier(0.4, 0, 0.2, 1); 
-}
-
-/* MANTÉM O SEU HOVER ATUAL (Para crescer ao passar o mouse) */
-.insta-link:hover {
-  transform: scale(1.1);
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  transform-origin: center center;
+  animation: insta-animation 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .insta-icon {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   fill: none;
   stroke: rgba(255, 255, 255, 0.7);
   stroke-width: 2;
@@ -132,44 +144,130 @@ html, body {
 }
 
 .insta-link:hover .insta-icon {
-  stroke: #FCD800; /* Ícone acende em amarelo */
-}
-
-.insta-link:hover {
-  transform: scale(1.1);
-}
-
-/* RESPONSIVIDADE PARA CELULARES */
-@media (max-width: 768px) {
-  .logo-site {
-    max-width: 85%; 
-  }
-  .top-nav {
-    top: 30px;
-    gap: 25px; /* Links um pouco mais juntos no celular */
-  }
-  .nav-link {
-    font-size: 12px;
-    letter-spacing: 1px;
-  }
-  .bottom-footer {
-    bottom: 30px;
-  }
-  .video-container::after {
-    background-size: 100% 3px; 
-  }
+  stroke: #FCD800;
 }
 
 @keyframes insta-animation {
   0% {
     transform: rotateY(0deg);
   }
-  /* Faz o giro de 360 graus para o lado em 1.5 segundos (30% do tempo) */
+
   30% {
     transform: rotateY(360deg);
   }
-  /* Fica parado de frente pelos 3.5 segundos restantes */
+
   100% {
     transform: rotateY(360deg);
+  }
+}
+
+/* RESPONSIVIDADE PARA CELULARES */
+@media (max-width: 768px) {
+  .logo-site {
+    max-width: 85%;
+  }
+
+  .top-nav {
+    padding: 25px 0;
+    gap: 20px;
+  }
+
+  .nav-link {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .video-container::after {
+    background-size: 100% 3px;
+  }
+
+  /* ADICIONADO: Reduz o tamanho do Instagram apenas no celular para manter a proporção da tela em pé */
+  .insta-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* ==========================================================================
+   BOTÃO DE VOLTAR AO TOPO (FIXO)
+   ========================================================================== */
+.back-to-top {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 10;
+  /* Fica no topo junto com o menu de navegação */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Fundo sutil para não brigar com o vídeo */
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  text-decoration: none;
+
+  /* Estado inicial: Escondido e invisível */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ativado pelo Javascript quando sai da seção Home */
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.arrow-icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.8);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.3s ease;
+}
+
+/* Efeito de passar o mouse */
+.back-to-top:hover {
+  border-color: #FCD800;
+  /* Acende no amarelo do logo */
+  transform: scale(1.1);
+}
+
+.back-to-top:hover .arrow-icon {
+  stroke: #FCD800;
+  animation: seta-pula 0.6s infinite alternate;
+  /* Seta dá um leve pulinho estético */
+}
+
+/* Animaçãozinha opcional da seta ao passar o mouse */
+@keyframes seta-pula {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Ajuste de margem em telas menores de celular */
+@media (max-width: 768px) {
+  .back-to-top {
+    bottom: 25px;
+    right: 25px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .arrow-icon {
+    width: 18px;
+    height: 18px;
   }
 }
