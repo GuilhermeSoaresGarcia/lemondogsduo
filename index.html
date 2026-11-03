@@ -17,7 +17,6 @@
     </video>
   </div>
 
-  <!-- MENU SUPERIOR CONSTANTE E SEMPRE NO TOPO -->
   <nav class="top-nav">
     <a href="#agenda" class="nav-link">Agenda</a>
     <a href="#midia" class="nav-link">Mídia</a>
@@ -25,11 +24,11 @@
     <a href="#contato" class="nav-link">Contato</a>
   </nav>
 
-  <!-- AS SEÇÕES DA SUA SPA (AGORA A HOME TAMBÉM É UMA SEÇÃO) -->
   <section id="home" class="site-section">
     <img src="lemon_dogs.png" alt="Lemon Dogs" class="logo-site">
 
-    <a href="https://www.instagram.com/marinagarcia.singer/" target="about:blank" class="insta-link" aria-label="Instagram">
+    <a href="https://www.instagram.com/marinagarcia.singer/" target="about:blank" class="insta-link"
+      aria-label="Instagram">
       <svg viewBox="0 0 24 24" class="insta-icon">
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
@@ -58,7 +57,6 @@
     <!-- Seu formulário -->
   </section>
 
-  <!-- NOVO: BOTÃO DE VOLTAR AO TOPO (FIXO NO CANTO INFERIOR DIREITO) -->
   <a href="#home" id="back-to-top" class="back-to-top" aria-label="Voltar ao topo">
     <svg viewBox="0 0 24 24" class="arrow-icon">
       <line x1="12" y1="19" x2="12" y2="5"></line>
@@ -66,11 +64,9 @@
     </svg>
   </a>
 
-  <!-- JAVASCRIPT BÁSICO PARA OCULTAR NA HOME -->
   <script>
     window.addEventListener('scroll', () => {
       const btn = document.getElementById('back-to-top');
-      // Mostra a seta apenas se o usuário rolar mais do que meia tela para baixo
       if (window.scrollY > window.innerHeight / 2) {
         btn.classList.add('visible');
       } else {
