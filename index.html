@@ -221,6 +221,36 @@
       });
     }
 
+    // =========================================================================
+    // MENU ATIVO (INTERSECTION OBSERVER)
+    // =========================================================================
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.site-section');
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-30% 0px -40% 0px', // Gatilho ativo quando a seção ocupa a maior parte do viewport
+      threshold: 0
+    };
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const currentId = entry.target.getAttribute('id');
+          navLinks.forEach((link) => {
+            const href = link.getAttribute('href');
+            if (href === `#${currentId}`) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach((section) => sectionObserver.observe(section));
+
     // Botão Voltar ao Topo
     window.addEventListener('scroll', () => {
       const btn = document.getElementById('back-to-top');
