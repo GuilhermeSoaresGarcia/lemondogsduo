@@ -38,8 +38,14 @@
   </section>
 
   <section id="agenda" class="site-section">
-    <h2>Próximos Shows</h2>
-    <!-- Conteúdo da agenda -->
+    <div class="section-header">
+      <h2 class="section-title">Agenda</h2>
+      <p class="section-subtitle">Próximos Shows & Turnê</p>
+    </div>
+
+    <div class="agenda-container" id="agenda-container">
+      <div class="agenda-loading">Carregando datas...</div>
+    </div>
   </section>
 
   <section id="midia" class="site-section">
@@ -220,6 +226,96 @@
           });
       });
     }
+
+    // =========================================================================
+    // CARREGAMENTO DA AGENDA (.md)
+    // =========================================================================
+    async function carregarAgenda() {
+      const container = document.getElementById('agenda-container');
+      if (!container) return;
+
+      try {
+        const resp = await fetch('agenda.md');
+        if (!resp.ok) {
+          throw new Error('Não foi possível carregar agenda.md');
+        }
+        const texto = await resp.text();
+        const linhas = texto.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+
+        if (linhas.length === 0) {
+          container.innerHTML = '<div class="agenda-empty">Nenhum show marcado no momento. Fique ligado!</div>';
+          return;
+        }
+
+        const blocosPorMes = [];
+        let mesAtual = null;
+
+        linhas.forEach((linha) => {
+          // Ignora eventuais comentários no markdown (# ou //)
+          const limpa = linha.replace(/^[#\-\*]+\s*/, '').trim();
+          if (!limpa) return;
+
+          // Se a linha começa com dígitos (ex: 01 SÁB Local), é um show
+          const matchShow = limpa.match(/^(\d{1,2})\s+([A-Za-zÀ-ÖØ-öø-ÿ]{3,4})\s+(.+)$/);
+
+          if (matchShow) {
+            if (!mesAtual) {
+              mesAtual = { mes: 'PRÓXIMAS DATAS', shows: [] };
+              blocosPorMes.push(mesAtual);
+            }
+            mesAtual.shows.push({
+              dia: matchShow[1].padStart(2, '0'),
+              semana: matchShow[2].toUpperCase(),
+              local: matchShow[3]
+            });
+          } else {
+            // Caso contrário, trata como título de mês / bloco
+            mesAtual = { mes: limpa.toUpperCase(), shows: [] };
+            blocosPorMes.push(mesAtual);
+          }
+        });
+
+        // Renderiza no container
+        container.innerHTML = '';
+        blocosPorMes.forEach((bloco) => {
+          if (bloco.shows.length === 0) return;
+
+          const blockEl = document.createElement('div');
+          blockEl.className = 'agenda-month-block';
+
+          const titleEl = document.createElement('h3');
+          titleEl.className = 'agenda-month-title';
+          titleEl.textContent = bloco.mes;
+          blockEl.appendChild(titleEl);
+
+          const listEl = document.createElement('ul');
+          listEl.className = 'agenda-list';
+
+          bloco.shows.forEach((show) => {
+            const itemEl = document.createElement('li');
+            itemEl.className = 'agenda-item';
+            itemEl.innerHTML = `
+              <span class="agenda-day-number">${show.dia}</span>
+              <span class="agenda-day-week">${show.semana}</span>
+              <span class="agenda-venue">${show.local}</span>
+            `;
+            listEl.appendChild(itemEl);
+          });
+
+          blockEl.appendChild(listEl);
+          container.appendChild(blockEl);
+        });
+
+        if (container.children.length === 0) {
+          container.innerHTML = '<div class="agenda-empty">Nenhum show marcado no momento. Fique ligado!</div>';
+        }
+      } catch (err) {
+        console.error('Erro ao carregar agenda:', err);
+        container.innerHTML = '<div class="agenda-error">Não foi possível carregar as datas dos shows no momento.</div>';
+      }
+    }
+
+    carregarAgenda();
 
     // =========================================================================
     // MENU ATIVO (INTERSECTION OBSERVER)
