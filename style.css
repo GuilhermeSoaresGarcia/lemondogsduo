@@ -188,18 +188,32 @@ body {
 
 /* RESPONSIVIDADE PARA CELULARES */
 @media (max-width: 768px) {
+  .site-section {
+    padding: 53px 16px 40px 16px;
+    justify-content: flex-start;
+  }
+  
+  .site-section#home {
+    justify-content: center;
+    padding: 60px 16px;
+  }
+  
+  .section-header {
+    margin-bottom: 20px;
+  }
+  
   .logo-site {
     max-width: 85%;
   }
-
+  
   .top-nav {
     padding: 25px 0;
     gap: 20px;
   }
-
-  .nav-link {
+  
+  .nav-link {    
     font-size: 11px;
-    letter-spacing: 1px;
+    letter-spacing: 1px;    
   }
 
   .video-container::after {
