@@ -5,15 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LemonDogs</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles/main.css">
 </head>
 
 <body>
   <div class="video-container">
     <video autoplay muted loop playsinline disablePictureInPicture
       controlsList="nodownload nofullscreen noremoteplayback" data-autoplay>
-      <source src="lemon_dogs_hevc.mp4" type="video/mp4; codecs=hevc">
-      <source src="lemon_dogs_bg.mp4" type="video/mp4">
+      <source src="media/video/lemon_dogs_hevc.mp4" type="video/mp4; codecs=hevc">
+      <source src="media/video/lemon_dogs_bg.mp4" type="video/mp4">
     </video>
   </div>
 
@@ -25,7 +25,7 @@
   </nav>
 
   <section id="home" class="site-section">
-    <img src="lemon_dogs.png" alt="Lemon Dogs" class="logo-site">
+    <img src="media/img/lemon_dogs.png" alt="Lemon Dogs" class="logo-site">
 
     <a href="https://www.instagram.com/marinagarcia.singer/" target="about:blank" class="insta-link"
       aria-label="Instagram">
@@ -114,249 +114,11 @@
   <!-- SDK EmailJS -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
-  <script>
-    // =========================================================================
-    // CARREGAMENTO DE VARIÁVEIS DE AMBIENTE / CREDENCIAIS EMAILJS
-    // Ordem de prioridade:
-    // 1. window.ENV (carregado via env.js ou bundler Vite/Webpack/Parcel)
-    // 2. Leitura assíncrona de arquivo .env local (se servido via HTTP local)
-    // 3. Fallback estático definido abaixo
-    // =========================================================================
-    window.EMAILJS_CONFIG = {
-      publicKey: (window.ENV && window.ENV.EMAILJS_PUBLIC_KEY) || 'SUA_PUBLIC_KEY_AQUI',
-      serviceId: (window.ENV && window.ENV.EMAILJS_SERVICE_ID) || 'SEU_SERVICE_ID_AQUI',
-      templateId: (window.ENV && window.ENV.EMAILJS_TEMPLATE_ID) || 'SEU_TEMPLATE_ID_AQUI'
-    };
-
-    // Função para carregar .env via fetch se ainda não foi carregado pelo window.ENV
-    window.carregarVariaveisDeAmbiente = async function carregarVariaveisDeAmbiente() {
-      const config = window.EMAILJS_CONFIG;
-      const precisaCarregar =
-        config.publicKey === 'SUA_PUBLIC_KEY_AQUI' ||
-        config.serviceId === 'SEU_SERVICE_ID_AQUI' ||
-        config.templateId === 'SEU_TEMPLATE_ID_AQUI';
-
-      if (precisaCarregar) {
-        try {
-          const resp = await fetch('.env');
-          if (resp.ok) {
-            const texto = await resp.text();
-            const linhas = texto.split(/\r?\n/);
-            const envMap = {};
-            linhas.forEach(linha => {
-              const semComentario = linha.split('#')[0].trim();
-              if (semComentario) {
-                const match = semComentario.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
-                if (match) {
-                  let val = (match[2] || '').trim();
-                  // Remove aspas simples ou duplas envolventes
-                  if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-                    val = val.substring(1, val.length - 1);
-                  }
-                  envMap[match[1]] = val;
-                }
-              }
-            });
-
-            if (envMap.EMAILJS_PUBLIC_KEY && envMap.EMAILJS_PUBLIC_KEY !== 'sua_public_key_aqui') {
-              config.publicKey = envMap.EMAILJS_PUBLIC_KEY;
-            }
-            if (envMap.EMAILJS_SERVICE_ID && envMap.EMAILJS_SERVICE_ID !== 'seu_service_id_aqui') {
-              config.serviceId = envMap.EMAILJS_SERVICE_ID;
-            }
-            if (envMap.EMAILJS_TEMPLATE_ID && envMap.EMAILJS_TEMPLATE_ID !== 'seu_template_id_aqui') {
-              config.templateId = envMap.EMAILJS_TEMPLATE_ID;
-            }
-          }
-        } catch (e) {
-          // Arquivo .env não servido ou inacessível no navegador; fallback mantido
-        }
-      }
-
-      // Inicializa o EmailJS quando a chave pública estiver disponível
-      if (window.emailjs && config.publicKey && config.publicKey !== 'SUA_PUBLIC_KEY_AQUI') {
-        emailjs.init({ publicKey: config.publicKey });
-      }
-    }
-
-    // Dispara a leitura assim que o DOM estiver pronto
-    carregarVariaveisDeAmbiente();
-
-    // Gerenciamento do envio do formulário
-    const contactForm = document.getElementById('contact-form');
-    const contactSubmitBtn = document.getElementById('contact-submit');
-    const contactFeedback = document.getElementById('contact-feedback');
-
-    if (contactForm) {
-      contactForm.addEventListener('submit', async function (event) {
-        event.preventDefault();
-
-        // Garante que tentou resolver variáveis antes de validar
-        await carregarVariaveisDeAmbiente();
-        const config = window.EMAILJS_CONFIG;
-
-        // Verificação amigável de credenciais ainda não preenchidas
-        if (!config.publicKey || config.publicKey === 'SUA_PUBLIC_KEY_AQUI' || config.publicKey === 'sua_public_key_aqui' ||
-            !config.serviceId || config.serviceId === 'SEU_SERVICE_ID_AQUI' || config.serviceId === 'seu_service_id_aqui' ||
-            !config.templateId || config.templateId === 'SEU_TEMPLATE_ID_AQUI' || config.templateId === 'seu_template_id_aqui') {
-          contactFeedback.className = 'form-feedback warning';
-          contactFeedback.textContent = 'Atenção: Configure suas credenciais no arquivo .env ou env.js (EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID).';
-          return;
-        }
-
-        contactSubmitBtn.disabled = true;
-        contactSubmitBtn.classList.add('loading');
-        contactFeedback.className = 'form-feedback';
-        contactFeedback.textContent = '';
-
-        emailjs.sendForm(config.serviceId, config.templateId, this)
-          .then(() => {
-            contactFeedback.className = 'form-feedback success';
-            contactFeedback.textContent = 'Mensagem enviada com sucesso! Logo entraremos em contato.';
-            contactForm.reset();
-          })
-          .catch((error) => {
-            console.error('Erro EmailJS:', error);
-            contactFeedback.className = 'form-feedback error';
-            contactFeedback.textContent = 'Ocorreu um erro ao enviar. Tente novamente ou use nossas redes sociais.';
-          })
-          .finally(() => {
-            contactSubmitBtn.disabled = false;
-            contactSubmitBtn.classList.remove('loading');
-          });
-      });
-    }
-
-    // =========================================================================
-    // CARREGAMENTO DA AGENDA (.md)
-    // =========================================================================
-    async function carregarAgenda() {
-      const container = document.getElementById('agenda-container');
-      if (!container) return;
-
-      try {
-        const resp = await fetch('agenda.md');
-        if (!resp.ok) {
-          throw new Error('Não foi possível carregar agenda.md');
-        }
-        const texto = await resp.text();
-        const linhas = texto.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-
-        if (linhas.length === 0) {
-          container.innerHTML = '<div class="agenda-empty">Nenhum show marcado no momento. Fique ligado!</div>';
-          return;
-        }
-
-        const blocosPorMes = [];
-        let mesAtual = null;
-
-        linhas.forEach((linha) => {
-          // Ignora eventuais comentários no markdown (# ou //)
-          const limpa = linha.replace(/^[#\-\*]+\s*/, '').trim();
-          if (!limpa) return;
-
-          // Se a linha começa com dígitos (ex: 01 SÁB Local), é um show
-          const matchShow = limpa.match(/^(\d{1,2})\s+([A-Za-zÀ-ÖØ-öø-ÿ]{3,4})\s+(.+)$/);
-
-          if (matchShow) {
-            if (!mesAtual) {
-              mesAtual = { mes: 'PRÓXIMAS DATAS', shows: [] };
-              blocosPorMes.push(mesAtual);
-            }
-            mesAtual.shows.push({
-              dia: matchShow[1].padStart(2, '0'),
-              semana: matchShow[2].toUpperCase(),
-              local: matchShow[3]
-            });
-          } else {
-            // Caso contrário, trata como título de mês / bloco
-            mesAtual = { mes: limpa.toUpperCase(), shows: [] };
-            blocosPorMes.push(mesAtual);
-          }
-        });
-
-        // Renderiza no container
-        container.innerHTML = '';
-        blocosPorMes.forEach((bloco) => {
-          if (bloco.shows.length === 0) return;
-
-          const blockEl = document.createElement('div');
-          blockEl.className = 'agenda-month-block';
-
-          const titleEl = document.createElement('h3');
-          titleEl.className = 'agenda-month-title';
-          titleEl.textContent = bloco.mes;
-          blockEl.appendChild(titleEl);
-
-          const listEl = document.createElement('ul');
-          listEl.className = 'agenda-list';
-
-          bloco.shows.forEach((show) => {
-            const itemEl = document.createElement('li');
-            itemEl.className = 'agenda-item';
-            itemEl.innerHTML = `
-              <span class="agenda-day-number">${show.dia}</span>
-              <span class="agenda-day-week">${show.semana}</span>
-              <span class="agenda-venue">${show.local}</span>
-            `;
-            listEl.appendChild(itemEl);
-          });
-
-          blockEl.appendChild(listEl);
-          container.appendChild(blockEl);
-        });
-
-        if (container.children.length === 0) {
-          container.innerHTML = '<div class="agenda-empty">Nenhum show marcado no momento. Fique ligado!</div>';
-        }
-      } catch (err) {
-        console.error('Erro ao carregar agenda:', err);
-        container.innerHTML = '<div class="agenda-error">Não foi possível carregar as datas dos shows no momento.</div>';
-      }
-    }
-
-    carregarAgenda();
-
-    // =========================================================================
-    // MENU ATIVO (INTERSECTION OBSERVER)
-    // =========================================================================
-    const navLinks = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('.site-section');
-
-    const observerOptions = {
-      root: null,
-      rootMargin: '-30% 0px -40% 0px', // Gatilho ativo quando a seção ocupa a maior parte do viewport
-      threshold: 0
-    };
-
-    const sectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const currentId = entry.target.getAttribute('id');
-          navLinks.forEach((link) => {
-            const href = link.getAttribute('href');
-            if (href === `#${currentId}`) {
-              link.classList.add('active');
-            } else {
-              link.classList.remove('active');
-            }
-          });
-        }
-      });
-    }, observerOptions);
-
-    sections.forEach((section) => sectionObserver.observe(section));
-
-    // Botão Voltar ao Topo
-    window.addEventListener('scroll', () => {
-      const btn = document.getElementById('back-to-top');
-      if (window.scrollY > window.innerHeight / 2) {
-        btn.classList.add('visible');
-      } else {
-        btn.classList.remove('visible');
-      }
-    });
-  </script>
+  <!-- Scripts Modulares -->
+  <script src="scripts/env-loader.js"></script>
+  <script src="scripts/agenda.js"></script>
+  <script src="scripts/contato.js"></script>
+  <script src="scripts/navigation.js"></script>
 
 </body>
 
