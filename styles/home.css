@@ -1,0 +1,67 @@
+/* ==========================================================================
+   SEÇÃO HOME (#home)
+   ========================================================================== */
+.logo-site {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  filter: drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.8));
+}
+
+.insta-link {
+  display: inline-block;
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  transform-origin: center center;
+  animation: insta-animation 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.insta-icon {
+  width: 40px;
+  height: 40px;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.3s ease;
+}
+
+.insta-link:hover .insta-icon {
+  stroke: #FCD800;
+}
+
+@keyframes insta-animation {
+  0% {
+    transform: rotateY(0deg);
+  }
+
+  30% {
+    transform: rotateY(360deg);
+  }
+
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+/* RESPONSIVIDADE MOBILE DA HOME */
+@media (max-width: 768px) {
+  .site-section#home {
+    justify-content: center;
+    padding: 60px 16px;
+  }
+
+  .logo-site {
+    max-width: 85%;
+  }
+
+  .insta-icon {
+    width: 30px;
+    height: 30px;
+  }
+}

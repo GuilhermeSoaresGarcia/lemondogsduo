@@ -1,0 +1,204 @@
+/* ==========================================================================
+   SEÇÃO CONTATO (#contato)
+   ========================================================================== */
+.contact-form {
+  width: 100%;
+  max-width: 480px;
+  background: rgba(10, 10, 10, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 32px 28px;
+  box-sizing: border-box;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.form-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+  border-color: #FCD800;
+  background-color: rgba(0, 0, 0, 0.85);
+  box-shadow: 0 0 10px rgba(252, 216, 0, 0.3);
+}
+
+/* Customização do Select */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.select-wrapper::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}
+
+.contact-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.contact-form select option {
+  background-color: #111;
+  color: #fff;
+}
+
+.contact-form select option:disabled {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.contact-form textarea {
+  resize: vertical;
+  min-height: 90px;
+  max-height: 220px;
+}
+
+/* Botão de Envio */
+.contact-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 20px;
+  background-color: transparent;
+  border: 2px solid #FCD800;
+  color: #FCD800;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.contact-btn:hover {
+  background-color: #FCD800;
+  color: #000;
+  box-shadow: 0 0 16px rgba(252, 216, 0, 0.5);
+  transform: translateY(-1px);
+}
+
+.contact-btn:active {
+  transform: translateY(0);
+}
+
+.contact-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Spinner de carregamento */
+.btn-spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.contact-btn.loading .btn-spinner {
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Feedback de envio */
+.form-feedback {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+  border-radius: 4px;
+  transition: opacity 0.3s ease;
+  empty-cells: hide;
+}
+
+.form-feedback.success {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  padding: 10px 14px;
+}
+
+.form-feedback.error {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  padding: 10px 14px;
+}
+
+.form-feedback.warning {
+  color: #FCD800;
+  background: rgba(252, 216, 0, 0.1);
+  border: 1px solid rgba(252, 216, 0, 0.3);
+  padding: 10px 14px;
+}
+
+/* RESPONSIVIDADE MOBILE DO CONTATO */
+@media (max-width: 768px) {
+  .contact-form {
+    padding: 24px 18px;
+  }
+}

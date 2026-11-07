@@ -1,0 +1,14 @@
+/* ==========================================================================
+   FOLHA DE ESTILOS PRINCIPAL - LEMON DOGS
+   Importa o arquivo geral e os estilos modulares de cada seção.
+   ========================================================================== */
+
+/* Estilos gerais, reset, background, menu e voltar ao topo */
+@import url('general.css');
+
+/* Estilos modulares por seção */
+@import url('home.css');
+@import url('agenda.css');
+@import url('midia.css');
+@import url('sobre.css');
+@import url('contato.css');
